@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db.models import Min, Q
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, views, status, filters as drf_filters
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
@@ -7,7 +8,7 @@ from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 
 
-from .serializers import OfferSerializer
+from .serializers import OfferSerializer, OfferDetailSerializer
 from ..models import Offer, OfferDetail
 from ..filters.offer_filters import OfferFilter
 
@@ -37,3 +38,11 @@ class OffersViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+class OfferDetailsView(views.APIView):
+    permission_classes = [AllowAny]
+    
+    def get(self, request, pk):
+        offer_detail = get_object_or_404(OfferDetail, pk=pk)
+        serializer = OfferDetailSerializer(offer_detail)
+        return Response(serializer.data, status=status.HTTP_200_OK)

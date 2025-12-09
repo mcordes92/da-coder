@@ -11,6 +11,18 @@ from .serializers import OrderSerializer
 from ..models import Orders
 
 class OrdersViewSet(viewsets.ModelViewSet):
-    queryset = Orders.objects.all()
     permission_classes = [IsAuthenticated]
     serializer_class = OrderSerializer
+    queryset = None
+
+
+    def get_queryset(self):
+        action = self.action
+
+        if action == 'list':
+            return Orders.objects.filter(
+                Q(customer_user=self.request.user) | Q(business_user=self.request.user)
+            )
+        else:
+            return Orders.objects.all()
+        

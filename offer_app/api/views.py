@@ -11,6 +11,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .serializers import OfferSerializer, OfferDetailSerializer
 from ..models import Offer, OfferDetail
 from ..filters.offer_filters import OfferFilter
+from .permissions import IsOfferOwner, IsBusinessUser
 
 class OfferPagination(PageNumberPagination):
     page_size = 1
@@ -19,7 +20,6 @@ class OfferPagination(PageNumberPagination):
 
 class OffersViewSet(viewsets.ModelViewSet):
     serializer_class = OfferSerializer
-    permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend, drf_filters.SearchFilter, drf_filters.OrderingFilter]
     filterset_class = OfferFilter
     search_fields = ['title', 'description']
@@ -32,15 +32,34 @@ class OffersViewSet(viewsets.ModelViewSet):
              Offer.objects.all()
         .select_related('user')
         .prefetch_related('details')
+        .order_by('-updated_at')
         )
+    
+    """
+        Permission
 
-    # TODO: get_permissions einbauen, GET, PATCH, DELETE für PK
+        - GET: AllowAny
+        - POST: IsAuthenticated and type = business
+        - RETRIEVE = IsAuthenticated
+        - PATCH, DELETE: isAuthenticated and owner of the offer
+    """
+
+    def get_permissions(self):
+        if self.action == 'create':
+            self.permission_classes = [IsAuthenticated, IsBusinessUser]
+        elif self.action == 'retrieve':
+            self.permission_classes = [IsAuthenticated]
+        elif self.action in ['update', 'partial_update', 'destroy']:
+            self.permission_classes = [IsAuthenticated, IsOfferOwner]
+        else:
+            self.permission_classes = [AllowAny]
+        return super().get_permissions()
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
 class OfferDetailsView(views.APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     
     def get(self, request, pk):
         offer_detail = get_object_or_404(OfferDetail, pk=pk)

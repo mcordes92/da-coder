@@ -53,8 +53,9 @@ INSTALLED_APPS = [
     'profile_app',
     'offer_app',
     'order_app',
+    'review_app',
+    'baseinfo_app',
     'django_extensions',
-     'djangoviz',
 ]
 
 MIDDLEWARE = [

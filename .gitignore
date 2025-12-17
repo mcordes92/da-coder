@@ -210,3 +210,4 @@ setup.py
 postman_*.json
 
 static/
+.github/

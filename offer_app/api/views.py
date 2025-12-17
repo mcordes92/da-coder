@@ -14,11 +14,13 @@ from ..filters.offer_filters import OfferFilter
 from .permissions import IsOfferOwner, IsBusinessUser
 
 class OfferPagination(PageNumberPagination):
+    """Pagination configuration for offers."""
     page_size = 10
     page_size_query_param = 'page_size'
     max_page_size = 100
 
 class OffersViewSet(viewsets.ModelViewSet):
+    """ViewSet for managing offers with filtering, searching, and ordering."""
     serializer_class = OfferSerializer
     filter_backends = [DjangoFilterBackend, drf_filters.SearchFilter, drf_filters.OrderingFilter]
     filterset_class = OfferFilter
@@ -28,6 +30,7 @@ class OffersViewSet(viewsets.ModelViewSet):
 
 
     def get_queryset(self):
+        """Return optimized queryset with related user and details."""
         return (
              Offer.objects.all()
         .select_related('user')
@@ -35,16 +38,14 @@ class OffersViewSet(viewsets.ModelViewSet):
         .order_by('-updated_at')
         )
     
-    """
-        Permission
+    def get_permissions(self):
+        """Determine permissions based on action.
 
         - GET: AllowAny
         - POST: IsAuthenticated and type = business
-        - RETRIEVE = IsAuthenticated
-        - PATCH, DELETE: isAuthenticated and owner of the offer
-    """
-
-    def get_permissions(self):
+        - RETRIEVE: IsAuthenticated
+        - PATCH, DELETE: IsAuthenticated and owner of the offer
+        """
         if self.action == 'create':
             self.permission_classes = [IsAuthenticated, IsBusinessUser]
         elif self.action == 'retrieve':
@@ -56,12 +57,15 @@ class OffersViewSet(viewsets.ModelViewSet):
         return super().get_permissions()
 
     def perform_create(self, serializer):
+        """Save offer with the current user as owner."""
         serializer.save(user=self.request.user)
 
 class OfferDetailsView(views.APIView):
+    """API view for retrieving specific offer detail."""
     permission_classes = [IsAuthenticated]
     
     def get(self, request, pk):
+        """Retrieve a specific offer detail by ID."""
         offer_detail = get_object_or_404(OfferDetail, pk=pk)
         serializer = OfferDetailSerializer(offer_detail)
         return Response(serializer.data, status=status.HTTP_200_OK)

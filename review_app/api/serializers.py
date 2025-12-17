@@ -5,6 +5,7 @@ from rest_framework import serializers
 from ..models import Reviews
 
 class ReviewSerializer(serializers.ModelSerializer):
+    """Serializer for reviews with business user filtering."""
     reviewer = serializers.PrimaryKeyRelatedField(read_only=True)
     business_user = serializers.PrimaryKeyRelatedField(queryset=User.objects.filter(profile__type='business'))
 
@@ -22,6 +23,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at', 'updated_at', 'reviewer']
 
     def validate(self, attrs):
+        """Validate review data and restrict field updates."""
         request = self.context.get('request')
         view = self.context.get('view')
         action = getattr(view, 'action', None) if view else None

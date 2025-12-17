@@ -7,6 +7,7 @@ from ..models import Orders
 from offer_app.models import OfferDetail
 
 class OrderSerializer(serializers.ModelSerializer):
+    """Serializer for orders with offer detail information."""
     offer_detail_id = serializers.PrimaryKeyRelatedField(queryset=OfferDetail.objects.all(), source='offer_detail', read_only=False, error_messages={'does_not_exist': 'Offer detail with the given ID does not exist.'})
  
     title = serializers.CharField(source='offer_detail.title', read_only=True)
@@ -39,6 +40,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
     def validate(self, attrs):
+        """Validate order data based on the request method and action."""
         attrs = super().validate(attrs)
 
         request = self.context.get('request')
@@ -77,6 +79,7 @@ class OrderSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
+        """Create a new order with customer and business user assignment."""
         request = self.context.get('request')
 
         offer_detail = validated_data['offer_detail']
@@ -90,6 +93,7 @@ class OrderSerializer(serializers.ModelSerializer):
         return offer
     
     def to_representation(self, instance):
+        """Customize representation based on request method and action."""
         data = super().to_representation(instance)
         request = self.context.get('request')
         view = self.context.get('view')   

@@ -12,20 +12,19 @@ from ..models import Orders
 from .permissions import IsBusinessUser, IsCustomerUser
 
 class OrdersViewSet(viewsets.ModelViewSet):
+    """ViewSet for managing orders with role-based permissions."""
     permission_classes = [IsAuthenticated]
     serializer_class = OrderSerializer
     queryset = None
 
-    """
-        Permission
+    def get_permissions(self):
+        """Determine permissions based on action.
 
         - GET: IsAuthenticated
         - POST: IsAuthenticated and type = customer
         - PATCH: IsAuthenticated and type = business
         - DELETE: IsStaffUser
-    """
-
-    def get_permissions(self):
+        """
         if self.action == 'create':
             self.permission_classes = [IsAuthenticated, IsCustomerUser]
         elif self.action in ['update', 'partial_update']:
@@ -37,6 +36,7 @@ class OrdersViewSet(viewsets.ModelViewSet):
         return super().get_permissions()
 
     def get_queryset(self):
+        """Return orders filtered by user involvement (customer or business)."""
         action = self.action
 
         if action == 'list':
@@ -47,9 +47,11 @@ class OrdersViewSet(viewsets.ModelViewSet):
             return Orders.objects.all()
 
 class CountInProgressOrdersView(views.APIView):
+    """API view for counting in-progress orders for a business user."""
     permission_classes = [IsAuthenticated]
     
     def get(self, request, pk, format=None):
+        """Return count of in-progress orders for the specified business user."""
         user = get_object_or_404(User, pk=pk)
 
         if user.profile.type != 'business':
@@ -64,9 +66,11 @@ class CountInProgressOrdersView(views.APIView):
     
 
 class CountCompletedOrdersView(views.APIView):
+    """API view for counting completed orders for a business user."""
     passpermission_classes = [IsAuthenticated]
     
     def get(self, request, pk, format=None):
+        """Return count of completed orders for the specified business user."""
         user = get_object_or_404(User, pk=pk)
 
         if user.profile.type != 'business':

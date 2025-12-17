@@ -10,7 +10,7 @@ class IsOfferOwner(BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
-        # Check if the user is the owner of the offer
+        """Check if the user is the owner of the offer."""
         return obj.user == request.user
     
 class IsBusinessUser(BasePermission):
@@ -20,7 +20,7 @@ class IsBusinessUser(BasePermission):
     """
 
     def has_permission(self, request, view):
-        # Check if the user is authenticated and is of type 'business'
+        """Check if the user is authenticated and is of type 'business'."""
         user = User.objects.get(pk=request.user.pk)
 
         return request.user.is_authenticated and getattr(user.profile, 'type', None) == 'business'

@@ -14,6 +14,7 @@ from .permissions import IsCustomerUser, IsReviewer
 
 
 class ReviewsViewSet(viewsets.ModelViewSet):
+    """ViewSet for managing reviews with filtering and ordering."""
     permission_classes = [IsAuthenticated]
     serializer_class = ReviewSerializer
     filter_backends = [DjangoFilterBackend, drf_filters.OrderingFilter]
@@ -22,21 +23,20 @@ class ReviewsViewSet(viewsets.ModelViewSet):
     queryset = None
 
     def get_queryset(self):
+        """Return all reviews ordered by update time."""
         return (
              Reviews.objects.all()
         .order_by('-updated_at')
         )
 
-    """
-        Permission
+    def get_permissions(self):
+        """Determine permissions based on action.
 
         - GET: IsAuthenticated
         - POST: IsAuthenticated and type = customer and profile exists
         - PATCH: IsAuthenticated and reviewer is the author
         - DELETE: IsAuthenticated and reviewer is the author
-    """
-
-    def get_permissions(self):
+        """
         if self.action == 'create':
             self.permission_classes = [IsAuthenticated, IsCustomerUser]
         elif self.action in ['update', 'partial_update', 'destroy']:
@@ -46,4 +46,5 @@ class ReviewsViewSet(viewsets.ModelViewSet):
         return super().get_permissions()
     
     def perform_create(self, serializer):
+        """Save review with the current user as reviewer."""
         serializer.save(reviewer=self.request.user)

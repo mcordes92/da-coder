@@ -1,12 +1,12 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 class IsProfileOwnerOrReadOnly(BasePermission):
-    """
-    Erlaubt nur dem Besitzer des Profils, es zu bearbeiten.
-    Lesezugriff ist für alle erlaubt.
+    """Allow only the profile owner to edit it.
+
+    Read access is allowed for everyone.
     """
 
-    message = "Nur der Besitzer des Profils kann es bearbeiten."
+    message = "Only the profile owner can edit it."
 
     def has_permission(self, request, view):
         return bool(request.user and request.user.is_authenticated)

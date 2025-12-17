@@ -6,6 +6,7 @@ from rest_framework.reverse import reverse
 from ..models import Offer, OfferDetail
 
 class OfferDetailSerializer(serializers.ModelSerializer):
+    """Serializer for offer detail pricing tiers."""
     class Meta:
         model = OfferDetail
         fields = [
@@ -19,6 +20,7 @@ class OfferDetailSerializer(serializers.ModelSerializer):
         ]
 
 class OfferSerializer(serializers.ModelSerializer):
+    """Serializer for offers with nested details and user information."""
     user = serializers.PrimaryKeyRelatedField(read_only=True)
     details = OfferDetailSerializer(many=True)
 
@@ -42,6 +44,7 @@ class OfferSerializer(serializers.ModelSerializer):
         read_only_fields = ['user', 'id', 'created_at', 'updated_at', 'min_price', 'min_delivery_time', 'user_details']
 
     def validate_details(self, value):
+        """Validate that an offer has exactly 3 details (basic, standard, premium)."""
         if self.instance is None:
             if len(value) != 3:
                 raise serializers.ValidationError({"errors": "An offer must have 3 details."})
@@ -52,6 +55,7 @@ class OfferSerializer(serializers.ModelSerializer):
         return value
     
     def create(self, validated_data):
+        """Create a new offer with associated details."""
         details_data = validated_data.pop('details')
         offer = Offer.objects.create(**validated_data)
 
@@ -61,6 +65,7 @@ class OfferSerializer(serializers.ModelSerializer):
         return offer
     
     def update(self, instance, validated_data):
+        """Update an existing offer and its details."""
         details_data = validated_data.pop('details', None)
 
         for attr, value in validated_data.items():
@@ -92,6 +97,7 @@ class OfferSerializer(serializers.ModelSerializer):
 
 
     def get_user_details(self, obj):
+        """Return basic user details for the offer owner."""
         user = obj.user
         return {
             'first_name': user.profile.first_name,
@@ -100,6 +106,7 @@ class OfferSerializer(serializers.ModelSerializer):
         }
     
     def to_representation(self, instance):
+        """Customize representation based on request method and action."""
         data = super().to_representation(instance)
         request = self.context.get('request')
         view = self.context.get('view')   

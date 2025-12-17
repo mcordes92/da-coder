@@ -8,12 +8,14 @@ from rest_framework.response import Response
 from .serializers import RegistrationSerializer, LoginSerializer
 
 class RegistrationView(generics.CreateAPIView):
+    """API view for user registration."""
     
     serializer_class = RegistrationSerializer
     permission_classes = [AllowAny]
     queryset = User.objects.all()
 
     def create(self, request, *args, **kwargs):
+        """Create a new user and return authentication token."""
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -31,11 +33,13 @@ class RegistrationView(generics.CreateAPIView):
 
 
 class LoginView(mixins.ListModelMixin, generics.GenericAPIView):
+    """API view for user login."""
     serializer_class = LoginSerializer
     permission_classes = [AllowAny]
     queryset = User.objects.all()
 
     def post(self, request, *args, **kwargs):
+        """Authenticate user and return authentication token."""
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 

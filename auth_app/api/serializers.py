@@ -4,6 +4,7 @@ from rest_framework import serializers
 from profile_app.models import Profile
 
 class RegistrationSerializer(serializers.ModelSerializer):
+    """Serializer for user registration with profile type selection."""
     type = serializers.ChoiceField(choices=[('customer', 'customer'), ('business', 'business')], write_only=True)
     repeated_password = serializers.CharField(write_only=True)
 
@@ -17,6 +18,10 @@ class RegistrationSerializer(serializers.ModelSerializer):
         }
 
     def save(self, **kwargs):
+        """Create a new user with associated profile.
+
+        Validates password match and creates both User and Profile instances.
+        """
         password = self.validated_data['password']
         repeated_password = self.validated_data['repeated_password']
 
@@ -38,10 +43,15 @@ class RegistrationSerializer(serializers.ModelSerializer):
         return user
         
 class LoginSerializer(serializers.Serializer):
+    """Serializer for user login authentication."""
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
+        """Validate user credentials.
+
+        Checks if username exists and password is correct.
+        """
         username = data.get('username')
         password = data.get('password')
 
@@ -57,4 +67,5 @@ class LoginSerializer(serializers.Serializer):
         return data
 
     def get(self):
+        """Return the authenticated user."""
         return self.validated_data['user']

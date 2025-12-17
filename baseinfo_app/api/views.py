@@ -12,10 +12,11 @@ from offer_app.models import Offer
 from profile_app.models import Profile
 
 class BaseInfoView(mixins.ListModelMixin, generics.GenericAPIView):
+    """API view for retrieving base platform statistics."""
     permission_classes = [AllowAny]
 
     def get(self, request, *args, **kwargs):
-
+        """Return platform statistics including reviews, ratings, businesses, and offers."""
         review_count = Reviews.objects.all().count()
         average_rating = Reviews.objects.aggregate(avg_rating=models.Avg('rating'))['avg_rating'] or 0
         business_profile_count = Profile.objects.filter(type='business').count()

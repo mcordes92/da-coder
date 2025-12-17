@@ -1,9 +1,12 @@
+"""Models for order management."""
+
 from django.db import models
 from django.contrib.auth.models import User
 
 from offer_app.models import OfferDetail
 
 class Orders(models.Model):
+    """Model representing an order placed by a customer for an offer detail."""
     offer_detail = models.ForeignKey(OfferDetail, on_delete=models.CASCADE, related_name='orders')
 
     customer_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')

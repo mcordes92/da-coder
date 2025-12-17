@@ -10,7 +10,7 @@ class IsCustomerUser(BasePermission):
     """
 
     def has_permission(self, request, view):
-        # Check if the user is authenticated and is of type 'customer'
+        """Check if the user is authenticated and is of type 'customer'."""
         if not request.user.is_authenticated:
             return False
         
@@ -27,5 +27,5 @@ class IsReviewer(BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
-        # Check if the user is the owner of the offer
+        """Check if the user is the owner of the review."""
         return obj.reviewer == request.user

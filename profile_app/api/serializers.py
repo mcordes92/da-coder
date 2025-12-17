@@ -5,6 +5,7 @@ from rest_framework import serializers
 from ..models import Profile
 
 class ProfileSerializer(serializers.ModelSerializer):
+    """Full serializer for user profiles including email management."""
     user = serializers.PrimaryKeyRelatedField(read_only=True)
     username = serializers.CharField(source='user.username', read_only=True)
     email = serializers.EmailField(required=False)
@@ -66,6 +67,7 @@ class ProfileSerializer(serializers.ModelSerializer):
         return ordered
     
     def update(self, instance, validated_data):
+        """Update profile and associated user email if provided."""
         email = validated_data.pop('email', None)
 
         if email is not None:
@@ -76,6 +78,7 @@ class ProfileSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
     
 class BaseProfileSerializer(serializers.ModelSerializer):
+    """Base serializer for profiles without email field."""
     user = serializers.PrimaryKeyRelatedField(read_only=True)
     username = serializers.CharField(source='user.username', read_only=True)
 
@@ -130,6 +133,7 @@ class BaseProfileSerializer(serializers.ModelSerializer):
         return ordered
     
 class BusinessProfileSerializer(BaseProfileSerializer):
+    """Serializer for business profiles with extended fields."""
     class Meta(BaseProfileSerializer.Meta):
        fields = [
            'user',
@@ -145,6 +149,7 @@ class BusinessProfileSerializer(BaseProfileSerializer):
        ]
     
 class CustomerProfileSerializer(BaseProfileSerializer):
+    """Serializer for customer profiles with basic fields."""
     class Meta(BaseProfileSerializer.Meta):
         fields = [
             'user',

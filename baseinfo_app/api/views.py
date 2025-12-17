@@ -12,6 +12,7 @@ from offer_app.models import Offer
 from profile_app.models import Profile
 
 class BaseInfoView(mixins.ListModelMixin, generics.GenericAPIView):
+    permission_classes = [AllowAny]
 
     def get(self, request, *args, **kwargs):
 

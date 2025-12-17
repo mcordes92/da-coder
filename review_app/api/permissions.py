@@ -11,9 +11,14 @@ class IsCustomerUser(BasePermission):
 
     def has_permission(self, request, view):
         # Check if the user is authenticated and is of type 'customer'
-        user = User.objects.get(pk=request.user.pk)
-
-        return request.user.is_authenticated and getattr(user.profile, 'type', None) == 'customer'
+        if not request.user.is_authenticated:
+            return False
+        
+        try:
+            user = User.objects.get(pk=request.user.pk)
+            return hasattr(user, 'profile') and user.profile.type == 'customer'
+        except User.DoesNotExist:
+            return False
     
 class IsReviewer(BasePermission):
     """

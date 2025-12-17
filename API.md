@@ -1,14 +1,14 @@
-# Coderr API – Endpoint Dokumentation
+# Coderr API – Endpoint Documentation
 
 ## Authentication
 
-### Registrierung
+### Registration
 
 **POST** `/api/registration/`
 
-**Beschreibung:**
+**Description:**
 
-Erstellt einen neuen Benutzer. Der Benutzer kann entweder ein `customer` oder `business` sein.
+Creates a new user. The user can be either a `customer` or `business`.
 
 **Request Body**
 
@@ -37,11 +37,11 @@ Erstellt einen neuen Benutzer. Der Benutzer kann entweder ein `customer` oder `b
 
 **Status Codes**
 
-- 201 Benutzer erfolgreich erstellt
-- 400 Ungültige Anfrage
-- 500 Interner Serverfehler
+- 201 User successfully created
+- 400 Invalid request
+- 500 Internal server error
 
-**Permissions:** keine
+**Permissions:** None
 
 ---
 
@@ -73,23 +73,23 @@ Erstellt einen neuen Benutzer. Der Benutzer kann entweder ein `customer` oder `b
 
 **Status Codes**
 
-- 200 Erfolgreich
-- 400 Ungültige Anmeldedaten
-- 500 Interner Serverfehler
+- 200 Successful
+- 400 Invalid credentials
+- 500 Internal server error
 
-**Permissions:** keine
+**Permissions:** None
 
 ---
 
 ## Profile
 
-### Profil abrufen
+### Get Profile
 
 **GET** `/api/profile/{pk}/`
 
-**Beschreibung:**
+**Description:**
 
-Ruft die Profildaten eines Benutzers ab.
+Retrieves profile data of a user.
 
 **Success Response**
 
@@ -109,11 +109,11 @@ Ruft die Profildaten eines Benutzers ab.
 
 ```
 
-**Permissions:** Authentifiziert
+**Permissions:** Authenticated
 
 ---
 
-### Profil aktualisieren
+### Update Profile
 
 **PATCH** `/api/profile/{pk}/`
 
@@ -132,35 +132,35 @@ Ruft die Profildaten eines Benutzers ab.
 
 **Status Codes**
 
-- 200 Erfolgreich aktualisiert
-- 401 Nicht authentifiziert
-- 403 Keine Berechtigung
+- 200 Successfully updated
+- 401 Not authenticated
+- 403 No permission
 
 ---
 
-### Business Profile
+### Business Profiles
 
 **GET** `/api/profiles/business/`
 
-**Permissions:** Authentifiziert
+**Permissions:** Authenticated
 
 ---
 
-### Customer Profile
+### Customer Profiles
 
 **GET** `/api/profiles/customer/`
 
-**Permissions:** Authentifiziert
+**Permissions:** Authenticated
 
 ---
 
-## Angebote (Offers)
+## Offers
 
-### Alle Angebote abrufen
+### Get All Offers
 
 **GET** `/api/offers/`
 
-**Query Parameter**
+**Query Parameters**
 
 - `creator_id`
 - `min_price`
@@ -169,7 +169,7 @@ Ruft die Profildaten eines Benutzers ab.
 - `search`
 - `page_size`
 
-**Success Response (gekürzt)**
+**Success Response (shortened)**
 
 ```json
 {
@@ -186,11 +186,11 @@ Ruft die Profildaten eines Benutzers ab.
 
 ```
 
-**Permissions:** keine
+**Permissions:** None
 
 ---
 
-### Angebot erstellen
+### Create Offer
 
 **POST** `/api/offers/`
 
@@ -198,8 +198,8 @@ Ruft die Profildaten eines Benutzers ab.
 
 ```json
 {
-  "title": "Grafikdesign Paket",
-  "description": "Ein umfassendes Grafikdesign-Paket",
+  "title": "Graphic Design Package",
+  "description": "A comprehensive graphic design package",
   "details": [
     {
       "title": "Basic Design",
@@ -212,43 +212,43 @@ Ruft die Profildaten eines Benutzers ab.
 
 ```
 
-**Permissions:** Nur `business` User
+**Permissions:** Only `business` users
 
 ---
 
-### Angebotsdetails
+### Get Offer Details
 
 **GET** `/api/offers/{id}/`
 
 ---
 
-### Angebot aktualisieren
+### Update Offer
 
 **PATCH** `/api/offers/{id}/`
 
 ---
 
-### Angebot löschen
+### Delete Offer
 
 **DELETE** `/api/offers/{id}/`
 
-**Permissions:** Nur Ersteller
+**Permissions:** Only creator
 
 ---
 
-## Bestellungen (Orders)
+## Orders
 
-### Bestellungen abrufen
+### Get Orders
 
 **GET** `/api/orders/`
 
-**Beschreibung:**
+**Description:**
 
-Gibt alle Bestellungen des eingeloggten Users zurück.
+Returns all orders of the logged-in user.
 
 ---
 
-### Bestellung erstellen
+### Create Order
 
 **POST** `/api/orders/`
 
@@ -263,7 +263,7 @@ Gibt alle Bestellungen des eingeloggten Users zurück.
 
 ---
 
-### Bestellstatus ändern
+### Update Order Status
 
 **PATCH** `/api/orders/{id}/`
 
@@ -274,11 +274,11 @@ Gibt alle Bestellungen des eingeloggten Users zurück.
 
 ```
 
-**Permissions:** Business User
+**Permissions:** Business user
 
 ---
 
-### Bestellung löschen
+### Delete Order
 
 **DELETE** `/api/orders/{id}/`
 
@@ -298,45 +298,45 @@ Gibt alle Bestellungen des eingeloggten Users zurück.
 
 ---
 
-## Bewertungen (Reviews)
+## Reviews
 
-### Bewertungen abrufen
+### Get Reviews
 
 **GET** `/api/reviews/`
 
 ---
 
-### Bewertung erstellen
+### Create Review
 
 **POST** `/api/reviews/`
 
 ```json
 {
   "rating": 5,
-  "description": "Alles war top!"
+  "description": "Everything was great!"
 }
 
 ```
 
 ---
 
-### Bewertung aktualisieren
+### Update Review
 
 **PATCH** `/api/reviews/{id}/`
 
 ---
 
-### Bewertung löschen
+### Delete Review
 
 **DELETE** `/api/reviews/{id}/`
 
-**Permissions:** Nur Ersteller
+**Permissions:** Only creator
 
 ---
 
-## Übergreifende Endpoints
+## General Endpoints
 
-### Basisinformationen
+### Base Information
 
 **GET** `/api/base-info/`
 
@@ -350,6 +350,6 @@ Gibt alle Bestellungen des eingeloggten Users zurück.
 
 ```
 
-**Permissions:** keine
+**Permissions:** None
 
 ---

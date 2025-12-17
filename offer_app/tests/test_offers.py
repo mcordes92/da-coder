@@ -47,7 +47,7 @@ class GetOffersListHappyPathTests(APITestCase):
     
     def test_get_offers_list_authenticated(self):
         """
-        Authentifizierte Benutzer können die Angebotsliste abrufen
+        Authentifizierte Benutzer können die Angebotsliste abrufen (Status 200)
         """
         customer_user = User.objects.create_user(username='customer1', password='testpass123')
         Profile.objects.create(user=customer_user, type='customer')
@@ -90,7 +90,7 @@ class GetOfferDetailHappyPathTests(APITestCase):
     
     def test_get_offer_detail_authenticated(self):
         """
-        Authentifizierte Benutzer können ein einzelnes Angebot abrufen
+        Authentifizierte Benutzer können ein einzelnes Angebot abrufen (Status 200)
         """
         self.client.force_authenticate(user=self.customer_user)
         url = reverse('offers-detail', kwargs={'pk': self.offer.pk})
@@ -182,7 +182,7 @@ class UpdateOfferHappyPathTests(APITestCase):
     
     def test_update_offer_as_owner(self):
         """
-        Besitzer können ihr eigenes Angebot aktualisieren (PATCH)
+        Besitzer können ihr eigenes Angebot aktualisieren (Status 200)
         """
         url = reverse('offers-detail', kwargs={'pk': self.offer.pk})
         payload = {"title": "Updated Title"}
@@ -223,7 +223,7 @@ class DeleteOfferHappyPathTests(APITestCase):
     
     def test_delete_offer_as_owner(self):
         """
-        Besitzer können ihr eigenes Angebot löschen
+        Besitzer können ihr eigenes Angebot löschen (Status 204)
         """
         url = reverse('offers-detail', kwargs={'pk': self.offer.pk})
         response = self.client.delete(url)
@@ -264,7 +264,7 @@ class GetOfferDetailViewHappyPathTests(APITestCase):
     
     def test_get_offer_detail_authenticated(self):
         """
-        Authentifizierte Benutzer können Angebotsdetails abrufen
+        Authentifizierte Benutzer können Angebotsdetails abrufen (Status 200)
         """
         self.client.force_authenticate(user=self.customer_user)
         url = reverse('offer-details', kwargs={'pk': self.offer_detail.pk})
@@ -304,7 +304,7 @@ class GetOfferDetailUnhappyPathTests(APITestCase):
     
     def test_get_nonexistent_offer(self):
         """
-        Abrufen eines nicht existierenden Angebots gibt 404 zurück
+        Abrufen eines nicht existierenden Angebots gibt Status 404 zurück
         """
         self.client.force_authenticate(user=self.business_user)
         url = reverse('offers-detail', kwargs={'pk': 99999})
@@ -434,7 +434,7 @@ class UpdateOfferUnhappyPathTests(APITestCase):
     
     def test_update_offer_as_customer(self):
         """
-        Customer User können keine Angebote aktualisieren (403)
+        Customer User können keine Angebote aktualisieren (Status 403)
         """
         self.client.force_authenticate(user=self.customer_user)
         url = reverse('offers-detail', kwargs={'pk': self.offer.pk})
@@ -442,6 +442,28 @@ class UpdateOfferUnhappyPathTests(APITestCase):
         response = self.client.patch(url, payload, format='json')
 
         self.assertEqual(response.status_code, 403)
+    
+    def test_update_offer_with_invalid_data(self):
+        """
+        Update mit ungültigen Daten schlägt fehl (Status 400)
+        """
+        self.client.force_authenticate(user=self.business_user1)
+        url = reverse('offers-detail', kwargs={'pk': self.offer.pk})
+        payload = {"title": ""}  # Leerer Titel ist ungültig
+        response = self.client.patch(url, payload, format='json')
+
+        self.assertEqual(response.status_code, 400)
+    
+    def test_update_nonexistent_offer(self):
+        """
+        Update eines nicht existierenden Angebots gibt Status 404 zurück
+        """
+        self.client.force_authenticate(user=self.business_user1)
+        url = reverse('offers-detail', kwargs={'pk': 99999})
+        payload = {"title": "Updated Title"}
+        response = self.client.patch(url, payload, format='json')
+
+        self.assertEqual(response.status_code, 404)
 
 
 class DeleteOfferUnhappyPathTests(APITestCase):
@@ -516,7 +538,7 @@ class DeleteOfferUnhappyPathTests(APITestCase):
     
     def test_delete_nonexistent_offer(self):
         """
-        Löschen eines nicht existierenden Angebots gibt 404 zurück
+        Löschen eines nicht existierenden Angebots gibt Status 404 zurück
         """
         self.client.force_authenticate(user=self.business_user1)
         url = reverse('offers-detail', kwargs={'pk': 99999})
@@ -560,7 +582,7 @@ class GetOfferDetailViewUnhappyPathTests(APITestCase):
     
     def test_get_nonexistent_offer_detail(self):
         """
-        Abrufen nicht existierender Angebotsdetails gibt 404 zurück
+        Abrufen nicht existierender Angebotsdetails gibt Status 404 zurück
         """
         self.client.force_authenticate(user=self.business_user)
         url = reverse('offer-details', kwargs={'pk': 99999})
@@ -583,7 +605,7 @@ class OfferValidationTests(APITestCase):
     
     def test_create_offer_with_less_than_3_details(self):
         """
-        Angebot mit weniger als 3 Details schlägt fehl
+        Angebot mit weniger als 3 Details schlägt fehl (Status 400)
         """
         url = reverse('offers-list')
         payload = {
@@ -607,7 +629,7 @@ class OfferValidationTests(APITestCase):
     
     def test_create_offer_with_duplicate_offer_types(self):
         """
-        Angebot mit duplizierten offer_types schlägt fehl
+        Angebot mit duplizierten offer_types schlägt fehl (Status 400)
         """
         url = reverse('offers-list')
         payload = {
@@ -705,7 +727,7 @@ class OfferValidationTests(APITestCase):
     
     def test_update_offer_detail_without_offer_type(self):
         """
-        Update von Details ohne offer_type schlägt fehl
+        Update von Details ohne offer_type schlägt fehl (Status 400)
         """
         offer = Offer.objects.create(
             user=self.business_user,
@@ -737,7 +759,7 @@ class OfferValidationTests(APITestCase):
     
     def test_update_offer_detail_with_nonexistent_offer_type(self):
         """
-        Update eines nicht existierenden offer_types schlägt fehl
+        Update eines nicht existierenden offer_types schlägt fehl (Status 400)
         """
         offer = Offer.objects.create(
             user=self.business_user,

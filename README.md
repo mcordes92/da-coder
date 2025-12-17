@@ -198,8 +198,6 @@ Coverage Summary:
 
 **All other modules: 100% Coverage**
 
-The missing lines mainly concern error handling and edge cases that are not covered in the current test suite.
-
 ### Django Tests
 
 Alternatively, Django's own test runner can be used:

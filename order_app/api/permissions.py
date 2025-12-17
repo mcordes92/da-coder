@@ -1,7 +1,6 @@
-from rest_framework.permissions import BasePermission
-from rest_framework.exceptions import NotFound
-
 from django.contrib.auth.models import User
+
+from rest_framework.permissions import BasePermission
    
 class IsBusinessUser(BasePermission):
     """

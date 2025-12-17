@@ -127,7 +127,7 @@ class OfferSerializer(serializers.ModelSerializer):
             data['details'] = [
                 {
                     'id': d.id,
-                    'url': reverse('offers-detail', args=[d.id], request=request),
+                    'url': reverse('offer-details', args=[d.id], request=request),
                 }
                 for d in instance.details.all()
             ]

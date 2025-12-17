@@ -67,7 +67,6 @@ class LoginTests(APITestCase):
         """
         Status Code 400: Ungültige Anfragedaten - falsches Passwort für existierenden User
         """
-        # Erst registrieren
         reg_url = reverse('registration')
         payload = {
             "username": "existingUser",
@@ -78,7 +77,6 @@ class LoginTests(APITestCase):
         }
         self.client.post(reg_url, payload, format='json')
         
-        # Dann mit falschem Passwort einloggen
         login_url = reverse('login')
         login_payload = {
             "username": "existingUser",

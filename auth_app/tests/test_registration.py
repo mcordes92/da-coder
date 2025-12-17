@@ -83,10 +83,8 @@ class RegistrationTests(APITestCase):
             "repeated_password": "strongpassword123",
             "type": "customer"
         }
-        # Erste Registrierung
         self.client.post(url, payload, format='json')
         
-        # Zweite Registrierung mit gleichem Benutzernamen
         payload["email"] = "user2@example.com"
         response = self.client.post(url, payload, format='json')
         self.assertEqual(response.status_code, 400)

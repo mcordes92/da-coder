@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django.db.models import Min
 from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework import viewsets, views, status, filters as drf_filters
@@ -34,6 +35,10 @@ class OffersViewSet(viewsets.ModelViewSet):
              Offer.objects.all()
         .select_related('user')
         .prefetch_related('details')
+        .annotate(
+            min_price_value=Min('details__price'),
+            min_delivery_time_value=Min('details__delivery_time_in_days')
+        )
         .order_by('-updated_at')
         )
     

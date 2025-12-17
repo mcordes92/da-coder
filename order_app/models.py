@@ -19,3 +19,6 @@ class Orders(models.Model):
     status = models.CharField(max_length=50, default='in_progress', choices=status_choices)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name_plural = "Orders"

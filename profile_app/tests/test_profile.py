@@ -39,7 +39,8 @@ class ProfileTests(APITestCase):
 
         self.assertIn('first_name', response.data)
         self.assertIn('last_name', response.data)     
-        self.assertIn('file', response.data) 
+        self.assertIn('file', response.data)
+        self.assertIn('location', response.data)
         self.assertIn('tel', response.data) 
         self.assertIn('description', response.data) 
         self.assertIn('working_hours', response.data) 
@@ -49,6 +50,25 @@ class ProfileTests(APITestCase):
 
         self.assertIn('email', response.data) 
         self.assertIn('created_at', response.data)
+
+    def test_get_profile_unauthorized(self):
+        """
+        Abrufen des Profils ohne Authentifizierung liefert Status 401 zurück
+        """
+        url = reverse('profileGetPatch', kwargs={'pk': 1})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 401)
+
+    def test_get_profile_not_found(self):
+        """
+        Abrufen eines nicht existierenden Profils liefert Status 404 zurück
+        """
+        token = registerUser(self)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        
+        url = reverse('profileGetPatch', kwargs={'pk': 9999})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 404)
 
     def test_patch_profile_success(self):
         """
@@ -91,6 +111,42 @@ class ProfileTests(APITestCase):
 
         self.assertIn('created_at', response.data)
 
+    def test_patch_profile_unauthorized(self):
+        """
+        Aktualisieren des Profils ohne Authentifizierung liefert Status 401 zurück
+        """
+        url = reverse('profileGetPatch', kwargs={'pk': 1})
+        payload = {"first_name": "Max"}
+        response = self.client.patch(url, payload, format='json')
+        self.assertEqual(response.status_code, 401)
+
+    def test_patch_profile_forbidden(self):
+        """
+        Aktualisieren des Profils eines anderen Benutzers liefert Status 403 zurück
+        """
+        # Erstelle zwei Benutzer
+        token1 = self._register_user_with_type("user1", "user1@mail.de", "customer")
+        token2 = self._register_user_with_type("user2", "user2@mail.de", "customer")
+        
+        # Authentifiziere als user2, versuche user1's Profil zu ändern (pk=1)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token2)
+        url = reverse('profileGetPatch', kwargs={'pk': 1})
+        payload = {"first_name": "Hacker"}
+        response = self.client.patch(url, payload, format='json')
+        self.assertEqual(response.status_code, 403)
+
+    def test_patch_profile_not_found(self):
+        """
+        Aktualisieren eines nicht existierenden Profils liefert Status 404 zurück
+        """
+        token = registerUser(self)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        
+        url = reverse('profileGetPatch', kwargs={'pk': 9999})
+        payload = {"first_name": "Max"}
+        response = self.client.patch(url, payload, format='json')
+        self.assertEqual(response.status_code, 404)
+
     def _register_user_with_type(self, username, email, type):
         req_url = reverse('registration')
         payLoad = {
@@ -132,3 +188,19 @@ class ProfileTests(APITestCase):
         self.assertEqual(len(response_customer.data), 1)
         self.assertEqual(response_customer.data[0]['username'], 'customerUser')
         self.assertEqual(response_customer.data[0]['type'], 'customer')
+
+    def test_profiles_list_business_unauthorized(self):
+        """
+        Abrufen der Business-Profile ohne Authentifizierung liefert Status 401 zurück
+        """
+        url = reverse('profilesListBusiness')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 401)
+
+    def test_profiles_list_customer_unauthorized(self):
+        """
+        Abrufen der Customer-Profile ohne Authentifizierung liefert Status 401 zurück
+        """
+        url = reverse('profilesListCustomer')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 401)

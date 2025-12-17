@@ -20,7 +20,9 @@ class ProfileView(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, generics.G
     lookup_field = 'pk'
 
     def get_object(self):
-        return get_object_or_404(Profile, user=self.kwargs['pk'])
+        obj = get_object_or_404(Profile, user=self.kwargs['pk'])
+        self.check_object_permissions(self.request, obj)
+        return obj
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
